@@ -6,11 +6,9 @@ from dotenv import load_dotenv
 import os
 import uuid
 
-# 프로젝트 루트를 Python 경로에 추가
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE_DIR)
 
-# 환경 변수 로드
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 from embeddings.embedding_utils import embed_text

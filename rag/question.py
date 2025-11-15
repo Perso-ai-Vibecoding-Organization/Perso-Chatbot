@@ -12,6 +12,7 @@ llm = OpenAI()
 ############################
 # 문장 분류
 ############################
+
 def classify_question(user_question: str) -> str:
     prompt = QUESTION_PROMPT.replace("{QUESTION}", user_question)
     res = llm.chat.completions.create(

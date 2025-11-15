@@ -3,6 +3,12 @@ openai
 python-dotenv
 tqdm
 pydantic
+pydantic-settings
 langchain
 langchain-openai
 langsmith
+fastapi
+uvicorn
+sqlalchemy
+pymysql
+passlib[bcrypt]

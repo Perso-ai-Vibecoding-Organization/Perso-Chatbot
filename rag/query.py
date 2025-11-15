@@ -80,7 +80,7 @@ def generate_answer(user_question: str):
     q_type = classify_question(user_question)
 
     if q_type == "ood":
-        return "Perso.ai/이스트소프트 FAQ 범위를 벗어난 질문입니다."
+        return "Perso.ai FAQ 범위를 벗어난 질문입니다."
 
     # 검색
     results = search_with_two_vectors(user_question, top_k=5)
