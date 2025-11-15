@@ -1,5 +1,4 @@
 name: Deploy FastAPI
-
 on:
   push:
     branches: ["feat/deploy"]
