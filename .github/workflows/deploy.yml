@@ -1,5 +1,4 @@
 name: Deploy FastAPI
-
 on:
   push:
     branches: ["feat/deploy"]
@@ -44,7 +43,7 @@ jobs:
 
           docker pull ${{ secrets.DOCKER_USERNAME }}/perso-chatbot:${{ github.sha }}
           echo "${{ secrets.SETTINGS }}" > .env
-          
+
           docker run -d \
             --name perso_api \
             --env-file .env \
