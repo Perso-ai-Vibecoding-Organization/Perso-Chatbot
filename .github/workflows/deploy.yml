@@ -27,7 +27,7 @@ jobs:
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/perso-chatbot:latest
 
-    # 배포
+    # 서버에 배포
     - name: Deploy to Server
       uses: appleboy/ssh-action@v1.1.0
       with:
