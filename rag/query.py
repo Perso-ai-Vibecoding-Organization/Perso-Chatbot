@@ -3,6 +3,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from openai import OpenAI
 from dotenv import load_dotenv
+from rag.question import classify_question, yesno_answer
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -76,54 +77,43 @@ def search_with_two_vectors(user_question: str, top_k: int = 5):
 
 
 def generate_answer(user_question: str):
+    q_type = classify_question(user_question)
+
+    if q_type == "ood":
+        return "Perso.ai/이스트소프트 FAQ 범위를 벗어난 질문입니다."
+
+    # 검색
     results = search_with_two_vectors(user_question, top_k=5)
-
     if not results:
-        return "제공된 FAQ 데이터에서 관련 정보를 찾지 못했습니다."
+        return "제공된 FAQ 데이터에서 관련 정보를 찾기 어렵습니다."
+
     best = results[0]
-    max_score = best["final_score"]
+    payload = best["payload"]
+    answer = payload["answer"]
+    score = best["final_score"]
 
-    # threshold 설정
-    HIGH = 0.55   # 매우 유사 → LLM 없이 정답 반환
-    MID  = 0.35   # 애매 → RAG 수행
-    # 이하 → 관련 없음 판단
+    # YES/NO 질문이면 무조건 yesno_answer 실행
+    if q_type == "yesno":
+        return yesno_answer(user_question, answer)
 
-    # (1) 고확신
-    if max_score >= HIGH:
-        faq_ans = best["payload"]["answer"]
-        faq_id = best["id"]
-        return f"{faq_ans}\n\n(참고: FAQ #{faq_id})"
+    # info 질문
+    HIGH = 0.45
+    MID = 0.25
 
-    # (2) 중간
-    if max_score >= MID:
-        # 상위 1~3개 context 사용
-        top_contexts = results[:3]
-        context = ""
-        used_ids = []
+    if score >= HIGH:
+        return answer
 
-        for item in top_contexts:
-            context += item["payload"]["qa_text"] + "\n\n"
-            used_ids.append(item["id"])
-
+    if score >= MID:
+        context = "\n".join([r["payload"]["qa_text"] for r in results[:3]])
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": f"CONTEXT:\n{context}\n---\nUSER QUESTION:\n{user_question}"
-            }
+            {"role": "user", "content": f"CONTEXT:\n{context}\n---\nQUESTION:\n{user_question}"}
         ]
-
         completion = llm.chat.completions.create(
             model="gpt-4o-mini",
             messages=messages,
             temperature=0.0
         )
+        return completion.choices[0].message.content.strip()
 
-        answer = completion.choices[0].message.content
-        return f"{answer}\n\n(참고: FAQ #{', '.join(used_ids)})"
-
-    # (3) 저확신: 관련 없는 질문
-    return (
-        "제공된 Perso.ai/이스트소프트 FAQ 정보로는 정확한 답변을 찾지 못했습니다.\n"
-        "다른 질문을 해주세요."
-    )
+    return "제공된 Perso.ai FAQ 정보로는 정확한 답변을 찾기 어렵습니다."
