@@ -8,6 +8,7 @@ client = QdrantClient(
     url=os.getenv("QDRANT_URL"),
     api_key=os.getenv("QDRANT_API_KEY")
 )
+
 client.recreate_collection(
     collection_name="test_collection",
     vectors_config={
@@ -15,6 +16,3 @@ client.recreate_collection(
         "distance": "Cosine"
     }
 )
-print(client.get_collections())
-print(os.getenv("QDRANT_URL"))
-print(os.getenv("QDRANT_API_KEY"))

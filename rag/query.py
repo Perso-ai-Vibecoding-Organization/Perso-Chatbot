@@ -88,13 +88,13 @@ def generate_answer(user_question: str):
     MID  = 0.35   # 애매 → RAG 수행
     # 이하 → 관련 없음 판단
 
-    # (1) 고확신: score >= 0.90
+    # (1) 고확신
     if max_score >= HIGH:
         faq_ans = best["payload"]["answer"]
         faq_id = best["id"]
         return f"{faq_ans}\n\n(참고: FAQ #{faq_id})"
 
-    # (2) 중간(0.80~0.89): RAG
+    # (2) 중간
     if max_score >= MID:
         # 상위 1~3개 context 사용
         top_contexts = results[:3]
