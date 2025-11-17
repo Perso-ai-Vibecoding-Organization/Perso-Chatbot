@@ -15,8 +15,7 @@ COLLECTION_NAME = "perso_faq"
 
 client = QdrantClient(
     url=os.getenv("QDRANT_URL"),
-    api_key=os.getenv("QDRANT_API_KEY"),
-    prefer_grpc=False
+    api_key=os.getenv("QDRANT_API_KEY")
 )
 llm = OpenAI()
 
@@ -28,30 +27,18 @@ def search_with_two_vectors(user_question: str, top_k: int = 5):
 
     query_vec = embed_text(user_question)
 
-    # 1) question 기준 검색
-    hits_q = client.search_points(
+    hits_q = client.search(
         collection_name=COLLECTION_NAME,
-        query=models.SearchRequest(
-            vector=models.NamedVector(
-                name="vec_question",
-                vector=query_vec
-            ),
-            limit=top_k,
-            with_payload=True
-        )
+        vector=query_vec,
+        limit=top_k,
+        using="vec_question"
     )
 
-    # 2) qa_text 기준 검색
-    hits_qa = client.search_points(
+    hits_qa = client.search(
         collection_name=COLLECTION_NAME,
-        query=models.SearchRequest(
-            vector=models.NamedVector(
-                name="vec_qa",
-                vector=query_vec
-            ),
-            limit=top_k,
-            with_payload=True
-        )
+        vector=query_vec,
+        limit=top_k,
+        using="vec_qa"
     )
 
     # 3) id 기준으로 묶기
