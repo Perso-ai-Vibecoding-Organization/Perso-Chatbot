@@ -30,16 +30,14 @@ def search_with_two_vectors(user_question: str, top_k: int = 5):
 
     hits_q = client.search(
         collection_name=COLLECTION_NAME,
-        query_vector=query_vec,
-        limit=top_k,
-        using="vec_question"
+        query_vector={"vec_question": query_vec},
+        limit=top_k
     )
 
     hits_qa = client.search(
         collection_name=COLLECTION_NAME,
-        query_vector=query_vec,
-        limit=top_k,
-        using="vec_qa"
+        query_vector={"vec_qa": query_vec},
+        limit=top_k
     )
 
     # 3) id 기준으로 묶기
