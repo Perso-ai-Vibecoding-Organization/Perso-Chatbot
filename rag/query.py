@@ -15,7 +15,8 @@ COLLECTION_NAME = "perso_faq"
 
 client = QdrantClient(
     url=os.getenv("QDRANT_URL"),
-    api_key=os.getenv("QDRANT_API_KEY")
+    api_key=os.getenv("QDRANT_API_KEY"),
+    prefer_grpc=False
 )
 llm = OpenAI()
 
@@ -35,7 +36,8 @@ def search_with_two_vectors(user_question: str, top_k: int = 5):
                 name="vec_question",
                 vector=query_vec
             ),
-            limit=top_k
+            limit=top_k,
+            with_payload=True
         )
     )
 
@@ -47,7 +49,8 @@ def search_with_two_vectors(user_question: str, top_k: int = 5):
                 name="vec_qa",
                 vector=query_vec
             ),
-            limit=top_k
+            limit=top_k,
+            with_payload=True
         )
     )
 
