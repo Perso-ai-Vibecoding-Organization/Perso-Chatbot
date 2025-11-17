@@ -1,5 +1,6 @@
 from typing import List, Dict
 from qdrant_client import QdrantClient
+from qdrant_client.http.models import NamedVector
 from qdrant_client.http import models
 from openai import OpenAI
 from dotenv import load_dotenv
