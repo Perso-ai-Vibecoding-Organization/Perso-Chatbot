@@ -30,13 +30,19 @@ def search_with_two_vectors(user_question: str, top_k: int = 5):
 
     hits_q = client.search(
         collection_name=COLLECTION_NAME,
-        query_vector={"vec_question": query_vec},
+        query_vector=NamedVector(
+            name="vec_question",
+            vector=query_vec
+        ),
         limit=top_k
     )
 
     hits_qa = client.search(
         collection_name=COLLECTION_NAME,
-        query_vector={"vec_qa": query_vec},
+        query_vector=NamedVector(
+            name="vec_qa",
+            vector=query_vec
+        ),
         limit=top_k
     )
 
