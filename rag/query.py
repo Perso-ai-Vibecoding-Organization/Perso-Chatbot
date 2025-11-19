@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from rag.question import classify_question, yesno_answer
 import os
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
